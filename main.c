@@ -111,116 +111,8 @@ void createShapes(int gridShape[4][4] , char *idShapes  )
         break;
     }
 }
-void renderShape(SDL_Renderer *renderer , int x , int y ,Shape *shape , SDL_Color  *Colors)
-{
-
-    SDL_Rect rect ;
-    rect.w = cellSize-1;
-    rect.h = cellSize-1 ;
-
-        for (int j = 0; j < 4; j++)
-        {
-            int cellValue = shape->colorShape;
-            SDL_SetRenderDrawColor(renderer ,Colors[cellValue].r,Colors[cellValue].g,Colors[cellValue].b,Colors[cellValue].a) ;
-            rect.x = shape->position[shape->rotationState][j].column *cellSize +2;
-            rect.y= shape->position[shape->rotationState][j].rows *cellSize+2;
-
-            SDL_RenderFillRect(renderer,&rect) ;
-        }
-        
-
-    
-}
-
-void createShapesA(Shape *shape     )
-{
-   // shape->id = idShapes[rand() % 7] ;
-    shape->id = 3 ;
-
-    shape->colorShape = (rand() % 7 ) + 1 ; 
-    switch (shape->id)
-    {
-    case 0: // rotationState=0             'I'
-                shape->position[0][0].rows = 0 ; shape->position[0][0].column = 2 ;
-                shape->position[0][1].rows = 1 ; shape->position[0][1].column = 2 ;
-                shape->position[0][2].rows = 2 ; shape->position[0][2].column = 2 ;
-                shape->position[0][3].rows = 3 ; shape->position[0][3].column = 2 ;
-                // rotationState=1
-                shape->position[1][0].rows = 1 ; shape->position[1][0].column = 0 ;
-                shape->position[1][1].rows = 1 ; shape->position[1][1].column = 1 ;
-                shape->position[1][2].rows = 1 ; shape->position[1][2].column = 2 ;
-                shape->position[1][3].rows = 1 ; shape->position[1][3].column = 3 ;
-
-
-        break;
-    case 1: //             'L'
-                // rotationState=0
-                shape->position[0][0].rows = 0 ; shape->position[0][0].column = 2 ;
-                shape->position[0][1].rows = 1 ; shape->position[0][1].column = 0 ;
-                shape->position[0][2].rows = 1 ; shape->position[0][2].column = 1 ;
-                shape->position[0][3].rows = 1 ; shape->position[0][3].column = 2 ;
-
-                // rotationState=1
-                shape->position[1][0].rows = 0 ; shape->position[1][0].column = 1 ;
-                shape->position[1][1].rows = 1 ; shape->position[1][1].column = 1 ;
-                shape->position[1][2].rows = 2 ; shape->position[1][2].column = 1 ;
-                shape->position[1][3].rows = 2 ; shape->position[1][3].column = 2 ;
-
-                // rotationState=2
-                shape->position[2][0].rows = 2 ; shape->position[2][0].column = 0 ;
-                shape->position[2][1].rows = 1 ; shape->position[2][1].column = 0 ;
-                shape->position[2][2].rows = 1 ; shape->position[2][2].column = 1 ;
-                shape->position[2][3].rows = 1 ; shape->position[2][3].column = 2 ;
-
-                // rotationState=3
-                shape->position[3][0].rows = 0 ; shape->position[3][0].column = 0 ;
-                shape->position[3][1].rows = 0 ; shape->position[3][1].column = 1 ;
-                shape->position[3][2].rows = 1 ; shape->position[3][2].column = 1 ;
-                shape->position[3][3].rows = 2 ; shape->position[3][3].column = 1 ;
-
-
-        break;
-    case 2 : //   'O'
-                shape->position[0][0].rows = 1; shape->position[0][0].column = 1;
-                shape->position[0][1].rows = 1; shape->position[0][1].column = 2;
-                shape->position[0][2].rows = 2; shape->position[0][2].column = 1;
-                shape->position[0][3].rows = 2; shape->position[0][3].column = 2;
-
-        break;  
-    case 3: //             'J'
-                // rotationState=0
-                shape->position[0][0].rows = 2 ; shape->position[0][0].column = 2 ;
-                shape->position[0][1].rows = 1 ; shape->position[0][1].column = 0 ;
-                shape->position[0][2].rows = 1 ; shape->position[0][2].column = 1 ;
-                shape->position[0][3].rows = 1 ; shape->position[0][3].column = 2 ;
-
-                // rotationState=1
-                shape->position[1][0].rows = 0 ; shape->position[1][0].column = 1 ;
-                shape->position[1][1].rows = 1 ; shape->position[1][1].column = 1 ;
-                shape->position[1][2].rows = 2 ; shape->position[1][2].column = 1 ;
-                shape->position[1][3].rows = 2 ; shape->position[1][3].column = 0 ;
-
-                // rotationState=2
-                shape->position[2][0].rows = 0 ; shape->position[2][0].column = 0 ;
-                shape->position[2][1].rows = 1 ; shape->position[2][1].column = 0 ;
-                shape->position[2][2].rows = 1 ; shape->position[2][2].column = 1 ;
-                shape->position[2][3].rows = 1 ; shape->position[2][3].column = 2 ;
-
-                // rotationState=3
-                shape->position[3][0].rows = 0 ; shape->position[3][0].column = 2 ;
-                shape->position[3][1].rows = 0 ; shape->position[3][1].column = 1 ;
-                shape->position[3][2].rows = 1 ; shape->position[3][2].column = 1 ;
-                shape->position[3][3].rows = 2 ; shape->position[3][3].column = 1 ;
-
-
-        break;           
-    default://typeshi
-        shape->position[0][0].rows=0;
-        break;
-    }
-}
-
-
+void renderShape(SDL_Renderer *renderer , int x , int y ,Shape *shape , SDL_Color  *Colors);
+void createShapesA(Shape *shape     );
 
 
 
@@ -230,11 +122,11 @@ int main(int argc, char* argv[]) {
     srand(time(0));
 
     Shape shape ;
-    shape.rotationState=0;
+    shape.rotationState=3;
     int grid[row][col] ;
     int gridShape[4][4] ;
     char idShapes[7];
-    setIdShapes(idShapes);
+   // setIdShapes(idShapes);
 
     SDL_Color Colors[colorNum] ;
     setColors(Colors , colorNum);
@@ -397,4 +289,169 @@ void setColors(SDL_Color *arr , int length)
     arr[7].r = 13 ;arr[7].g = 64 ; arr[7].b = 216 ;   // blue
     for (int i=0 ; i < length ; i++)
         arr[i].a=255;
+}
+
+
+
+
+void renderShape(SDL_Renderer *renderer , int x , int y ,Shape *shape , SDL_Color  *Colors)
+{
+
+    SDL_Rect rect ;
+    rect.w = cellSize-1;
+    rect.h = cellSize-1 ;
+
+        for (int j = 0; j < 4; j++)
+        {
+            int cellValue = shape->colorShape;
+            SDL_SetRenderDrawColor(renderer ,Colors[cellValue].r,Colors[cellValue].g,Colors[cellValue].b,Colors[cellValue].a) ;
+            rect.x = shape->position[shape->rotationState][j].column *cellSize +2;
+            rect.y= shape->position[shape->rotationState][j].rows *cellSize+2;
+
+            SDL_RenderFillRect(renderer,&rect) ;
+        }
+        
+
+    
+}
+
+
+void createShapesA(Shape *shape     )
+{
+   // shape->id = idShapes[rand() % 7] ;
+    shape->id = 6 ;
+
+    shape->colorShape = (rand() % 7 ) + 1 ; 
+    switch (shape->id)
+    {
+    case 0: // rotationState=0             'I'
+                shape->position[0][0].rows = 0 ; shape->position[0][0].column = 2 ;
+                shape->position[0][1].rows = 1 ; shape->position[0][1].column = 2 ;
+                shape->position[0][2].rows = 2 ; shape->position[0][2].column = 2 ;
+                shape->position[0][3].rows = 3 ; shape->position[0][3].column = 2 ;
+                // rotationState=1
+                shape->position[1][0].rows = 1 ; shape->position[1][0].column = 0 ;
+                shape->position[1][1].rows = 1 ; shape->position[1][1].column = 1 ;
+                shape->position[1][2].rows = 1 ; shape->position[1][2].column = 2 ;
+                shape->position[1][3].rows = 1 ; shape->position[1][3].column = 3 ;
+
+
+        break;
+    case 1: //             'L'
+                // rotationState=0
+                shape->position[0][0].rows = 0 ; shape->position[0][0].column = 2 ;
+                shape->position[0][1].rows = 1 ; shape->position[0][1].column = 0 ;
+                shape->position[0][2].rows = 1 ; shape->position[0][2].column = 1 ;
+                shape->position[0][3].rows = 1 ; shape->position[0][3].column = 2 ;
+
+                // rotationState=1
+                shape->position[1][0].rows = 0 ; shape->position[1][0].column = 1 ;
+                shape->position[1][1].rows = 1 ; shape->position[1][1].column = 1 ;
+                shape->position[1][2].rows = 2 ; shape->position[1][2].column = 1 ;
+                shape->position[1][3].rows = 2 ; shape->position[1][3].column = 2 ;
+
+                // rotationState=2
+                shape->position[2][0].rows = 2 ; shape->position[2][0].column = 0 ;
+                shape->position[2][1].rows = 1 ; shape->position[2][1].column = 0 ;
+                shape->position[2][2].rows = 1 ; shape->position[2][2].column = 1 ;
+                shape->position[2][3].rows = 1 ; shape->position[2][3].column = 2 ;
+
+                // rotationState=3
+                shape->position[3][0].rows = 0 ; shape->position[3][0].column = 0 ;
+                shape->position[3][1].rows = 0 ; shape->position[3][1].column = 1 ;
+                shape->position[3][2].rows = 1 ; shape->position[3][2].column = 1 ;
+                shape->position[3][3].rows = 2 ; shape->position[3][3].column = 1 ;
+
+
+        break;
+    case 2 : //   'O'
+                shape->position[0][0].rows = 1; shape->position[0][0].column = 1;
+                shape->position[0][1].rows = 1; shape->position[0][1].column = 2;
+                shape->position[0][2].rows = 2; shape->position[0][2].column = 1;
+                shape->position[0][3].rows = 2; shape->position[0][3].column = 2;
+
+        break;  
+    case 3: //             'J'
+                // rotationState=0
+                shape->position[0][0].rows = 2 ; shape->position[0][0].column = 2 ;
+                shape->position[0][1].rows = 1 ; shape->position[0][1].column = 0 ;
+                shape->position[0][2].rows = 1 ; shape->position[0][2].column = 1 ;
+                shape->position[0][3].rows = 1 ; shape->position[0][3].column = 2 ;
+
+                // rotationState=1
+                shape->position[1][0].rows = 0 ; shape->position[1][0].column = 1 ;
+                shape->position[1][1].rows = 1 ; shape->position[1][1].column = 1 ;
+                shape->position[1][2].rows = 2 ; shape->position[1][2].column = 1 ;
+                shape->position[1][3].rows = 2 ; shape->position[1][3].column = 0 ;
+
+                // rotationState=2
+                shape->position[2][0].rows = 0 ; shape->position[2][0].column = 0 ;
+                shape->position[2][1].rows = 1 ; shape->position[2][1].column = 0 ;
+                shape->position[2][2].rows = 1 ; shape->position[2][2].column = 1 ;
+                shape->position[2][3].rows = 1 ; shape->position[2][3].column = 2 ;
+
+                // rotationState=3
+                shape->position[3][0].rows = 0 ; shape->position[3][0].column = 2 ;
+                shape->position[3][1].rows = 0 ; shape->position[3][1].column = 1 ;
+                shape->position[3][2].rows = 1 ; shape->position[3][2].column = 1 ;
+                shape->position[3][3].rows = 2 ; shape->position[3][3].column = 1 ;
+
+
+        break;
+    case 4: //             'S'
+                // rotationState=0
+                shape->position[0][0].rows = 1 ; shape->position[0][0].column = 0 ;
+                shape->position[0][1].rows = 1 ; shape->position[0][1].column = 1 ;
+                shape->position[0][2].rows = 0 ; shape->position[0][2].column = 1 ;
+                shape->position[0][3].rows = 0 ; shape->position[0][3].column = 2 ;
+
+                // rotationState=1
+                shape->position[1][0].rows = 0 ; shape->position[1][0].column = 0 ;
+                shape->position[1][1].rows = 1 ; shape->position[1][1].column = 0 ;
+                shape->position[1][2].rows = 1 ; shape->position[1][2].column = 1 ;
+                shape->position[1][3].rows = 2 ; shape->position[1][3].column = 1 ;
+
+        break;
+    case 5: //             'Z'
+                // rotationState=0
+                shape->position[0][0].rows = 0 ; shape->position[0][0].column = 0 ;
+                shape->position[0][1].rows = 1 ; shape->position[0][1].column = 1 ;
+                shape->position[0][2].rows = 0 ; shape->position[0][2].column = 1 ;
+                shape->position[0][3].rows = 1 ; shape->position[0][3].column = 2 ;
+
+                // rotationState=1
+                shape->position[1][0].rows = 2 ; shape->position[1][0].column = 0 ;
+                shape->position[1][1].rows = 1 ; shape->position[1][1].column = 0 ;
+                shape->position[1][2].rows = 1 ; shape->position[1][2].column = 1 ;
+                shape->position[1][3].rows = 0 ; shape->position[1][3].column = 1 ;
+
+        break;
+    case 6: //             'T'
+                // rotationState=0
+                shape->position[0][0].rows = 0 ; shape->position[0][0].column = 0 ;
+                shape->position[0][1].rows = 0 ; shape->position[0][1].column = 1 ;
+                shape->position[0][2].rows = 0 ; shape->position[0][2].column = 2 ;
+                shape->position[0][3].rows = 1 ; shape->position[0][3].column = 1 ;
+
+                // rotationState=1
+                shape->position[1][0].rows = 0 ; shape->position[1][0].column = 2 ;
+                shape->position[1][1].rows = 1 ; shape->position[1][1].column = 2 ;
+                shape->position[1][2].rows = 2 ; shape->position[1][2].column = 2 ;
+                shape->position[1][3].rows = 1 ; shape->position[1][3].column = 1 ;
+                // rotationState=3
+                shape->position[2][0].rows = 2 ; shape->position[2][0].column = 0 ;
+                shape->position[2][1].rows = 2 ; shape->position[2][1].column = 1 ;
+                shape->position[2][2].rows = 2 ; shape->position[2][2].column = 2 ;
+                shape->position[2][3].rows = 1 ; shape->position[2][3].column = 1 ;
+                // rotationState=4
+                shape->position[3][0].rows = 0 ; shape->position[3][0].column = 0 ;
+                shape->position[3][1].rows = 1 ; shape->position[3][1].column = 0 ;
+                shape->position[3][2].rows = 2 ; shape->position[3][2].column = 0 ;
+                shape->position[3][3].rows = 1 ; shape->position[3][3].column = 1 ;
+
+        break;                                   
+    default://typeshi
+        shape->position[0][0].rows=0;
+        break;
+    }
 }
