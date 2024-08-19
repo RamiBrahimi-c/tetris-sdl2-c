@@ -1,6 +1,5 @@
 #include <SDL2/SDL.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <time.h>
 #include <stdbool.h>
 
@@ -27,7 +26,13 @@ typedef struct Shape
     Position position[4][4];
     int rotationState;
     int colorShape ;
+    bool move;
 }Shape;
+typedef struct Direction
+{
+    bool right;
+    bool left;
+}Direction;
 
 
 
@@ -112,7 +117,214 @@ void createShapes(int gridShape[4][4] , char *idShapes  )
     }
 }
 void renderShape(SDL_Renderer *renderer , int x , int y ,Shape *shape , SDL_Color  *Colors);
-void createShapesA(Shape *shape     );
+void createShapesA(Shape *shape);
+
+
+
+void printArrayofPos(Position *arr)
+{
+    for (int i = 0 ; i <4 ; i++)
+    printf("arr[%d].i = %d arr[%d].col = %d \n", i , arr[i].rows , i , arr[i].column);
+}
+void setPositionArray(Shape *shape , Position *arr )
+{
+    
+    switch (shape->id)
+    {
+    case 0:
+        
+        if (shape->rotationState == 0)
+        {
+            arr[0].rows = shape->position[0][3].rows; arr[0].column = shape->position[0][3].column;
+        }
+        else
+        {
+            
+                                                    
+            arr[0].rows = shape->position[1][0].rows;arr[0].column = shape->position[1][0].column;            
+            arr[1].rows = shape->position[1][1].rows; arr[1].column = shape->position[1][1].column;            
+            arr[2].rows = shape->position[1][2].rows; arr[2].column = shape->position[1][2].column;            
+            arr[3].rows = shape->position[1][3].rows; arr[3].column = shape->position[1][3].column;            
+           // printArrayofPos(arr);
+        }
+        
+        break;
+    
+    default:
+    arr[0].column=0;
+        break;
+    }
+}
+bool isThereaBlockbelow(Shape *shape , int grid[row][col], Position arrPositionLastRow[4])
+{
+    int i = shape->rotationState , iGrid = arrPositionLastRow[0].rows  , jGrid = arrPositionLastRow[0].column;
+ switch (shape->id)
+ {
+    case 0:
+        if (shape->rotationState==0)
+            return (grid[shape->position[0][3].rows+1][ shape->position[0][3].column]>0)?false : true ;
+        if (shape->rotationState==1)
+            return (grid[shape->position[1][0].rows+1][shape->position[1][0].column] > 0 ||grid[shape->position[1][1].rows+1][shape->position[1][1].column] > 0 || grid[shape->position[1][2].rows+1][shape->position[1][2].column] > 0 || grid[shape->position[1][3].rows+1][shape->position[1][3].column] > 0) ? false : true; 
+        
+        
+        break;
+    case 1 :
+        if (shape->rotationState ==0)
+            return (grid[shape->position[0][1].rows+1][ shape->position[0][1].column]>0 || grid[shape->position[0][2].rows+1][ shape->position[0][2].column]>0  || grid[shape->position[0][3].rows+1][ shape->position[0][3].column]>0)?false : true ;
+        if(shape->rotationState==1)
+            return (grid[shape->position[1][2].rows+1][ shape->position[1][2].column]>0 || grid[shape->position[1][3].rows+1][ shape->position[1][3].column]>0) ? false : true ;
+        if(shape->rotationState==2)
+            return (grid[shape->position[2][0].rows+1][ shape->position[2][0].column]>0 || grid[shape->position[2][2].rows+1][ shape->position[2][2].column]>0 || grid[shape->position[2][3].rows+1][ shape->position[2][3].column]>0) ? false :true;
+        if(shape->rotationState==3)
+            return (grid[shape->position[3][0].rows+1][ shape->position[3][0].column]>0 || grid[shape->position[3][3].rows+1][ shape->position[3][3].column]>0) ? false :true;
+            break;
+    case 2 :
+        return (grid[shape->position[0][2].rows+1][ shape->position[0][2].column]>0 || grid[shape->position[0][3].rows+1][ shape->position[0][3].column]>0) ? false : true ;        
+        break;
+    case 3:
+        if(shape->rotationState==0)
+        return (grid[shape->position[0][0].rows+1][ shape->position[0][0].column]>0 || grid[shape->position[0][1].rows+1][ shape->position[0][1].column]>0 || grid[shape->position[0][2].rows+1][ shape->position[0][2].column]>0) ? false :true;        
+        if(shape->rotationState==1)
+        return (grid[shape->position[1][2].rows+1][ shape->position[1][2].column]>0 || grid[shape->position[1][3].rows+1][ shape->position[1][3].column]>0 ) ? false :true;        
+        if(shape->rotationState==2)
+        return (grid[shape->position[2][1].rows+1][ shape->position[2][1].column]>0 || grid[shape->position[2][2].rows+1][ shape->position[2][2].column]>0 || grid[shape->position[2][3].rows+1][ shape->position[2][3].column]>0) ? false :true;        
+        if(shape->rotationState==3)
+        return (grid[shape->position[3][0].rows+1][ shape->position[3][0].column]>0 || grid[shape->position[3][3].rows+1][ shape->position[3][3].column]>0 ) ? false :true;        
+                
+        break;
+    case 4:
+        if(shape->rotationState==0)
+        return (grid[shape->position[0][1].rows+1][ shape->position[0][1].column]>0 || grid[shape->position[0][3].rows+1][ shape->position[0][3].column]>0 || grid[shape->position[0][0].rows+1][shape->position[0][0].column] >0) ? false :true;
+        if(shape->rotationState==1)
+        return (grid[shape->position[1][1].rows+1][ shape->position[1][1].column]>0 || grid[shape->position[1][3].rows+1][ shape->position[1][3].column]>0 ) ? false :true;
+
+        break;
+    case 5 :
+        if(shape->rotationState==0)
+        return (grid[shape->position[0][0].rows+1][ shape->position[0][0].column]>0 || grid[shape->position[0][1].rows+1][ shape->position[0][1].column]>0 || grid[shape->position[0][3].rows+1][shape->position[0][3].column] >0) ? false :true;
+        if(shape->rotationState==1)
+        return (grid[shape->position[1][0].rows+1][ shape->position[1][0].column]>0 || grid[shape->position[1][2].rows+1][ shape->position[1][2].column]>0 ) ? false :true;
+
+        break;
+    case 6:
+        if(shape->rotationState==0)
+        return (grid[shape->position[0][0].rows+1][ shape->position[0][0].column]>0 || grid[shape->position[0][2].rows+1][ shape->position[0][2].column]>0 || grid[shape->position[0][3].rows+1][ shape->position[0][3].column]>0) ? false :true;        
+        if(shape->rotationState==1)
+        return (grid[shape->position[1][2].rows+1][ shape->position[1][2].column]>0 || grid[shape->position[1][3].rows+1][ shape->position[1][3].column]>0 ) ? false :true;        
+        if(shape->rotationState==2)
+        return (grid[shape->position[2][0].rows+1][ shape->position[2][0].column]>0 || grid[shape->position[2][1].rows+1][ shape->position[2][1].column]>0 || grid[shape->position[2][2].rows+1][ shape->position[2][2].column]>0) ? false :true;        
+        if(shape->rotationState==3)
+        return (grid[shape->position[3][2].rows+1][ shape->position[3][2].column]>0 || grid[shape->position[3][3].rows+1][ shape->position[3][3].column]>0 ) ? false :true;        
+
+        break;               
+    default:
+    break;
+ }   
+}
+void setiGrid(Shape shape,int *iGrid , int *jGrid)
+{
+    switch (shape.id)
+    {
+    case 0:
+        *iGrid= (shape.rotationState==0) ? shape.position[0][3].rows : shape.position[1][3].rows;
+        *jGrid= (shape.rotationState==0) ? shape.position[0][3].column : shape.position[1][3].column;
+        break;
+    case 1 : 
+        if (shape.rotationState==0)
+        *iGrid= shape.position[0][3].rows;
+        if (shape.rotationState==1)
+        *iGrid= shape.position[1][3].rows;
+        if (shape.rotationState==2)
+        *iGrid= shape.position[2][0].rows;
+        if (shape.rotationState==3)
+        *iGrid= shape.position[3][3].rows;
+        break;
+    case 2:
+        if (shape.rotationState==0)
+        *iGrid=shape.position[0][3].rows;
+        break;
+    case 3:
+        if(shape.rotationState==0)
+        *iGrid=shape.position[0][0].rows;        
+        if(shape.rotationState==1)
+        *iGrid=shape.position[1][3].rows;        
+        if(shape.rotationState==2)
+        *iGrid=shape.position[2][3].rows;        
+        if(shape.rotationState==3)
+        *iGrid=shape.position[3][3].rows;        
+        break; 
+    case 4:
+        if(shape.rotationState==0)
+        *iGrid=shape.position[0][1].rows;           
+        if(shape.rotationState==1)
+        {
+            *iGrid=shape.position[1][3].rows;
+        }
+
+        break; 
+    case 5:
+        if(shape.rotationState==0)
+        *iGrid=shape.position[0][1].rows;                  
+        if(shape.rotationState==1)
+        {
+            *iGrid=shape.position[1][0].rows; 
+            printf("%d\n", *iGrid);
+        }
+        break;
+    case 6:
+        if(shape.rotationState==0)
+        *iGrid=shape.position[0][3].rows;        
+        if(shape.rotationState==1)
+        *iGrid=shape.position[1][2].rows;        
+        if(shape.rotationState==2)
+        *iGrid=shape.position[2][0].rows;        
+        if(shape.rotationState==3)
+        *iGrid=shape.position[3][2].rows;        
+        break;                         
+    default:
+        *iGrid=55;
+        break;
+    }
+}
+void moveShape(Shape *shape , int grid[row][col] ,  Position arrPositionLastRow[4])
+{
+    int i = shape->rotationState , iGrid   , jGrid = arrPositionLastRow[0].column;
+
+    setiGrid(*shape , &iGrid , &jGrid);
+
+    if (iGrid  < row -1 && isThereaBlockbelow(shape,grid , arrPositionLastRow)  ) 
+    {
+        //printf("valid %d\n", iGrid);
+        shape->move = true ;
+        for (int k =0 ; k <4 ; k++)
+        shape->position[i][k].rows++ ;      
+    } else 
+    {
+        shape->move = false ;
+
+    }
+}
+
+void moveShapeHorizantaly(Shape *shape , int grid[row][col] , Direction *direction)
+{
+    int i = shape->rotationState ;
+    if (direction->right && !direction->left && shape->move)
+    {
+        for (int k =0 ; k <4 ; k++)
+        shape->position[i][k].column++ ;  
+    }
+
+    if (!direction->right && direction->left && shape->move)
+    {
+        for (int k =0 ; k <4 ; k++)
+        shape->position[i][k].column-- ;  
+    }
+    direction->right = false ;
+    direction->left = false ;
+}
+
+
+
 
 
 
@@ -120,13 +332,23 @@ void createShapesA(Shape *shape     );
 
 int main(int argc, char* argv[]) {
     srand(time(0));
-
     Shape shape ;
+        Position arrPositionLastRow[4] ;
+
+    shape.id=1;
     shape.rotationState=3;
     int grid[row][col] ;
     int gridShape[4][4] ;
     char idShapes[7];
+
    // setIdShapes(idShapes);
+         createShapesA( &shape   );
+
+
+   // printArrayofPos(arrPositionLastRow);
+
+
+
 
     SDL_Color Colors[colorNum] ;
     setColors(Colors , colorNum);
@@ -152,17 +374,21 @@ int main(int argc, char* argv[]) {
 
 
     initializeGrid(grid);
-    printGrid(grid);
+   // printGrid(grid);
 
 /*          grid[0][0] = 2;
     grid[0][1] = 3;
     grid[0][2] = 4;
     grid[0][3] = 5;
     grid[0][4] = 6;
-    grid[0][5] = 7;
     grid[0][6] = 1 ; 
-     */                            
-         createShapesA( &shape   );
+     */              
+    grid[8][5] = 7;
+    grid[row-1][1]= 5 ;              
+//         createShapesA( &shape   );
+    Direction direction ;
+    direction.left=false;
+    direction.right=false;
     while (running)
     {
         while (SDL_PollEvent(&event))
@@ -178,6 +404,14 @@ int main(int argc, char* argv[]) {
                 {
                     case SDLK_ESCAPE:
                     running=false ;                   
+                    break;
+                    case SDLK_RIGHT:
+                        direction.right=true;
+                        moveShapeHorizantaly(&shape, grid,&direction);
+                    break;                                                                                        
+                    case SDLK_LEFT:
+                        direction.left=true;
+                        moveShapeHorizantaly(&shape, grid,&direction);
                     break;                                                                                        
 
 
@@ -190,9 +424,9 @@ int main(int argc, char* argv[]) {
         SDL_RenderClear(renderer);
 
         // start
-        //createShapes(gridShape ,idShapes);
 
-
+            setPositionArray(&shape , arrPositionLastRow);
+        moveShape(&shape , grid ,   arrPositionLastRow) ;
 
         render_grid(renderer , WINDOW_WIDTH/2-GRID_DIM/2,WINDOW_HEIGHT/2-GRID_DIM/2 , grid , Colors) ;
         renderShape(renderer , 0,0,&shape , Colors);
@@ -200,10 +434,10 @@ int main(int argc, char* argv[]) {
         
         SDL_RenderPresent(renderer) ;
 
-        SDL_Delay(200) ;
+        SDL_Delay(400) ;
         
     }
-    printGrid(grid);
+
 
     SDL_DestroyWindow(window);
     SDL_DestroyRenderer(renderer) ;
@@ -319,8 +553,8 @@ void renderShape(SDL_Renderer *renderer , int x , int y ,Shape *shape , SDL_Colo
 void createShapesA(Shape *shape     )
 {
    // shape->id = idShapes[rand() % 7] ;
-    shape->id = 6 ;
-
+   // shape->id = 0 ;
+    shape->move=true;
     shape->colorShape = (rand() % 7 ) + 1 ; 
     switch (shape->id)
     {
@@ -438,12 +672,12 @@ void createShapesA(Shape *shape     )
                 shape->position[1][1].rows = 1 ; shape->position[1][1].column = 2 ;
                 shape->position[1][2].rows = 2 ; shape->position[1][2].column = 2 ;
                 shape->position[1][3].rows = 1 ; shape->position[1][3].column = 1 ;
-                // rotationState=3
+                // rotationState=2
                 shape->position[2][0].rows = 2 ; shape->position[2][0].column = 0 ;
                 shape->position[2][1].rows = 2 ; shape->position[2][1].column = 1 ;
                 shape->position[2][2].rows = 2 ; shape->position[2][2].column = 2 ;
                 shape->position[2][3].rows = 1 ; shape->position[2][3].column = 1 ;
-                // rotationState=4
+                // rotationState=3
                 shape->position[3][0].rows = 0 ; shape->position[3][0].column = 0 ;
                 shape->position[3][1].rows = 1 ; shape->position[3][1].column = 0 ;
                 shape->position[3][2].rows = 2 ; shape->position[3][2].column = 0 ;
