@@ -221,13 +221,12 @@ bool isThereaBlockbelow(Shape *shape , int grid[row][col], Position arrPositionL
     break;
  }   
 }
-void setiGrid(Shape shape,int *iGrid , int *jGrid)
+void setiGrid(Shape shape,int *iGrid )
 {
     switch (shape.id)
     {
     case 0:
         *iGrid= (shape.rotationState==0) ? shape.position[0][3].rows : shape.position[1][3].rows;
-        *jGrid= (shape.rotationState==0) ? shape.position[0][3].column : shape.position[1][3].column;
         break;
     case 1 : 
         if (shape.rotationState==0)
@@ -266,10 +265,7 @@ void setiGrid(Shape shape,int *iGrid , int *jGrid)
         if(shape.rotationState==0)
         *iGrid=shape.position[0][1].rows;                  
         if(shape.rotationState==1)
-        {
-            *iGrid=shape.position[1][0].rows; 
-            printf("%d\n", *iGrid);
-        }
+        *iGrid=shape.position[1][0].rows; 
         break;
     case 6:
         if(shape.rotationState==0)
@@ -286,11 +282,11 @@ void setiGrid(Shape shape,int *iGrid , int *jGrid)
         break;
     }
 }
-void moveShape(Shape *shape , int grid[row][col] ,  Position arrPositionLastRow[4])
+void moveShapeVertically(Shape *shape , int grid[row][col] ,  Position arrPositionLastRow[4])
 {
-    int i = shape->rotationState , iGrid   , jGrid = arrPositionLastRow[0].column;
+    int i= shape->rotationState, iGrid;
 
-    setiGrid(*shape , &iGrid , &jGrid);
+    setiGrid(*shape , &iGrid );
 
     if (iGrid  < row -1 && isThereaBlockbelow(shape,grid , arrPositionLastRow)  ) 
     {
@@ -305,23 +301,72 @@ void moveShape(Shape *shape , int grid[row][col] ,  Position arrPositionLastRow[
     }
 }
 
-void moveShapeHorizantaly(Shape *shape , int grid[row][col] , Direction *direction)
+bool isThereABlockOnRight(Shape *shape , int grid[row][col])
 {
-    int i = shape->rotationState ;
-    if (direction->right && !direction->left && shape->move)
+    switch (shape->id)
     {
-        for (int k =0 ; k <4 ; k++)
-        shape->position[i][k].column++ ;  
-    }
+    case 0:
+        if(shape->rotationState==0)
+        return (grid[shape->position[0][0].rows][shape->position[0][0].column+1]>0 ||grid[shape->position[0][1].rows][shape->position[0][1].column+1]>0 || grid[shape->position[0][2].rows][shape->position[0][2].column+1]>0 || grid[shape->position[0][3].rows][shape->position[0][3].column+1]>0) ? false:true;
+        if(shape->rotationState==1)
+        return (grid[shape->position[1][3].rows][shape->position[1][3].column+1]>0 ) ? false:true;
 
-    if (!direction->right && direction->left && shape->move)
-    {
-        for (int k =0 ; k <4 ; k++)
-        shape->position[i][k].column-- ;  
+        break;
+    case 1:
+        if(shape->rotationState==0)
+        return (grid[shape->position[0][0].rows][shape->position[0][0].column+1]>0 ||grid[shape->position[0][3].rows][shape->position[0][3].column+1]>0 ) ? false:true;
+        if(shape->rotationState==1)
+        return (grid[shape->position[1][3].rows][shape->position[1][3].column+1]>0 ) ? false:true;
+        if(shape->rotationState==2)
+        return (grid[shape->position[2][3].rows][shape->position[2][3].column+1]>0 ) ? false:true;
+        if(shape->rotationState==3)
+        return (grid[shape->position[3][1].rows][shape->position[3][1].column+1]>0 || grid[shape->position[3][2].rows][shape->position[3][2].column+1]>0 || grid[shape->position[3][3].rows][shape->position[3][3].column+1]>0 ) ? false:true;
+
+        break;    
+    case 2:
+        if(shape->rotationState==0)
+        return (grid[shape->position[0][1].rows][shape->position[0][1].column+1]>0 ||grid[shape->position[0][3].rows][shape->position[0][3].column+1]>0 ) ? false:true;
+        break;    
+    case 3:
+        if(shape->rotationState==0)
+        return (grid[shape->position[0][0].rows][shape->position[0][0].column+1]>0 ||grid[shape->position[0][3].rows][shape->position[0][3].column+1]>0 ) ? false:true;
+        if(shape->rotationState==1)
+        return (grid[shape->position[1][0].rows][shape->position[1][0].column+1]>0 || grid[shape->position[1][1].rows][shape->position[1][1].column+1]>0 || grid[shape->position[1][2].rows][shape->position[1][2].column+1]>0 ) ? false:true;
+        if(shape->rotationState==2)
+        return (grid[shape->position[2][3].rows][shape->position[2][3].column+1]>0 ) ? false:true;
+        if(shape->rotationState==3)
+        return (grid[shape->position[3][0].rows][shape->position[3][0].column+1]>0 ) ? false:true;
+        break;
+    case 4:
+        if(shape->rotationState==0)
+        return (grid[shape->position[0][3].rows][shape->position[0][3].column+1]>0 ) ? false:true;
+        if(shape->rotationState==1)
+        return (grid[shape->position[1][2].rows][shape->position[1][2].column+1]>0 ||grid[shape->position[1][3].rows][shape->position[1][3].column+1]>0 ) ? false:true;
+        break;
+    case 5:
+        if(shape->rotationState==0)
+        return (grid[shape->position[0][3].rows][shape->position[0][3].column+1]>0 ) ? false:true;
+        if(shape->rotationState==1)
+        return (grid[shape->position[1][2].rows][shape->position[1][2].column+1]>0 ||grid[shape->position[1][3].rows][shape->position[1][3].column+1]>0 ) ? false:true;
+        break;
+    case 6:
+        if(shape->rotationState==0)
+        return (grid[shape->position[0][2].rows][shape->position[0][2].column+1]>0) ? false:true;
+        if(shape->rotationState==1)
+        return (grid[shape->position[1][0].rows][shape->position[1][0].column+1]>0 || grid[shape->position[1][1].rows][shape->position[1][1].column+1]>0 || grid[shape->position[1][2].rows][shape->position[1][2].column+1]>0 ) ? false:true;
+        if(shape->rotationState==2)
+        return (grid[shape->position[2][2].rows][shape->position[2][2].column+1]>0 ) ? false:true;
+        if(shape->rotationState==3)
+        return (grid[shape->position[3][3].rows][shape->position[3][3].column+1]>0 ) ? false:true;
+        break;        
+    default:
+        break;
     }
-    direction->right = false ;
-    direction->left = false ;
 }
+
+bool isThereABlockOnLeft(Shape *shape , int grid[row][col]);
+void setjGrid(Shape shape,int *jGridRight , int *jGridLeft );
+void moveShapeHorizantaly(Shape *shape , int grid[row][col] , Direction *direction);
 
 
 
@@ -335,7 +380,7 @@ int main(int argc, char* argv[]) {
     Shape shape ;
         Position arrPositionLastRow[4] ;
 
-    shape.id=1;
+    shape.id=6;
     shape.rotationState=3;
     int grid[row][col] ;
     int gridShape[4][4] ;
@@ -343,6 +388,7 @@ int main(int argc, char* argv[]) {
 
    // setIdShapes(idShapes);
          createShapesA( &shape   );
+
 
 
    // printArrayofPos(arrPositionLastRow);
@@ -376,15 +422,17 @@ int main(int argc, char* argv[]) {
     initializeGrid(grid);
    // printGrid(grid);
 
-/*          grid[0][0] = 2;
-    grid[0][1] = 3;
-    grid[0][2] = 4;
-    grid[0][3] = 5;
-    grid[0][4] = 6;
-    grid[0][6] = 1 ; 
-     */              
-    grid[8][5] = 7;
-    grid[row-1][1]= 5 ;              
+    grid[8][col-1] = 4;
+    grid[9][col-1] = 4;
+    grid[10][col-1] = 4;
+    grid[11][col-1] = 4;
+    
+    grid[8][0] = 5;
+    grid[9][0] = 5;
+    grid[10][0] = 5 ; 
+    grid[11][0] = 5 ; 
+                  
+              
 //         createShapesA( &shape   );
     Direction direction ;
     direction.left=false;
@@ -426,7 +474,7 @@ int main(int argc, char* argv[]) {
         // start
 
             setPositionArray(&shape , arrPositionLastRow);
-        moveShape(&shape , grid ,   arrPositionLastRow) ;
+        moveShapeVertically(&shape , grid ,   arrPositionLastRow) ;
 
         render_grid(renderer , WINDOW_WIDTH/2-GRID_DIM/2,WINDOW_HEIGHT/2-GRID_DIM/2 , grid , Colors) ;
         renderShape(renderer , 0,0,&shape , Colors);
@@ -686,6 +734,406 @@ void createShapesA(Shape *shape     )
         break;                                   
     default://typeshi
         shape->position[0][0].rows=0;
+        break;
+    }
+}
+
+bool isThereaBlockbelow(Shape *shape , int grid[row][col], Position arrPositionLastRow[4])
+{
+    int i = shape->rotationState , iGrid = arrPositionLastRow[0].rows  , jGrid = arrPositionLastRow[0].column;
+ switch (shape->id)
+ {
+    case 0:
+        if (shape->rotationState==0)
+            return (grid[shape->position[0][3].rows+1][ shape->position[0][3].column]>0)?false : true ;
+        if (shape->rotationState==1)
+            return (grid[shape->position[1][0].rows+1][shape->position[1][0].column] > 0 ||grid[shape->position[1][1].rows+1][shape->position[1][1].column] > 0 || grid[shape->position[1][2].rows+1][shape->position[1][2].column] > 0 || grid[shape->position[1][3].rows+1][shape->position[1][3].column] > 0) ? false : true; 
+        
+        
+        break;
+    case 1 :
+        if (shape->rotationState ==0)
+            return (grid[shape->position[0][1].rows+1][ shape->position[0][1].column]>0 || grid[shape->position[0][2].rows+1][ shape->position[0][2].column]>0  || grid[shape->position[0][3].rows+1][ shape->position[0][3].column]>0)?false : true ;
+        if(shape->rotationState==1)
+            return (grid[shape->position[1][2].rows+1][ shape->position[1][2].column]>0 || grid[shape->position[1][3].rows+1][ shape->position[1][3].column]>0) ? false : true ;
+        if(shape->rotationState==2)
+            return (grid[shape->position[2][0].rows+1][ shape->position[2][0].column]>0 || grid[shape->position[2][2].rows+1][ shape->position[2][2].column]>0 || grid[shape->position[2][3].rows+1][ shape->position[2][3].column]>0) ? false :true;
+        if(shape->rotationState==3)
+            return (grid[shape->position[3][0].rows+1][ shape->position[3][0].column]>0 || grid[shape->position[3][3].rows+1][ shape->position[3][3].column]>0) ? false :true;
+            break;
+    case 2 :
+        return (grid[shape->position[0][2].rows+1][ shape->position[0][2].column]>0 || grid[shape->position[0][3].rows+1][ shape->position[0][3].column]>0) ? false : true ;        
+        break;
+    case 3:
+        if(shape->rotationState==0)
+        return (grid[shape->position[0][0].rows+1][ shape->position[0][0].column]>0 || grid[shape->position[0][1].rows+1][ shape->position[0][1].column]>0 || grid[shape->position[0][2].rows+1][ shape->position[0][2].column]>0) ? false :true;        
+        if(shape->rotationState==1)
+        return (grid[shape->position[1][2].rows+1][ shape->position[1][2].column]>0 || grid[shape->position[1][3].rows+1][ shape->position[1][3].column]>0 ) ? false :true;        
+        if(shape->rotationState==2)
+        return (grid[shape->position[2][1].rows+1][ shape->position[2][1].column]>0 || grid[shape->position[2][2].rows+1][ shape->position[2][2].column]>0 || grid[shape->position[2][3].rows+1][ shape->position[2][3].column]>0) ? false :true;        
+        if(shape->rotationState==3)
+        return (grid[shape->position[3][0].rows+1][ shape->position[3][0].column]>0 || grid[shape->position[3][3].rows+1][ shape->position[3][3].column]>0 ) ? false :true;        
+                
+        break;
+    case 4:
+        if(shape->rotationState==0)
+        return (grid[shape->position[0][1].rows+1][ shape->position[0][1].column]>0 || grid[shape->position[0][3].rows+1][ shape->position[0][3].column]>0 || grid[shape->position[0][0].rows+1][shape->position[0][0].column] >0) ? false :true;
+        if(shape->rotationState==1)
+        return (grid[shape->position[1][1].rows+1][ shape->position[1][1].column]>0 || grid[shape->position[1][3].rows+1][ shape->position[1][3].column]>0 ) ? false :true;
+
+        break;
+    case 5 :
+        if(shape->rotationState==0)
+        return (grid[shape->position[0][0].rows+1][ shape->position[0][0].column]>0 || grid[shape->position[0][1].rows+1][ shape->position[0][1].column]>0 || grid[shape->position[0][3].rows+1][shape->position[0][3].column] >0) ? false :true;
+        if(shape->rotationState==1)
+        return (grid[shape->position[1][0].rows+1][ shape->position[1][0].column]>0 || grid[shape->position[1][2].rows+1][ shape->position[1][2].column]>0 ) ? false :true;
+
+        break;
+    case 6:
+        if(shape->rotationState==0)
+        return (grid[shape->position[0][0].rows+1][ shape->position[0][0].column]>0 || grid[shape->position[0][2].rows+1][ shape->position[0][2].column]>0 || grid[shape->position[0][3].rows+1][ shape->position[0][3].column]>0) ? false :true;        
+        if(shape->rotationState==1)
+        return (grid[shape->position[1][2].rows+1][ shape->position[1][2].column]>0 || grid[shape->position[1][3].rows+1][ shape->position[1][3].column]>0 ) ? false :true;        
+        if(shape->rotationState==2)
+        return (grid[shape->position[2][0].rows+1][ shape->position[2][0].column]>0 || grid[shape->position[2][1].rows+1][ shape->position[2][1].column]>0 || grid[shape->position[2][2].rows+1][ shape->position[2][2].column]>0) ? false :true;        
+        if(shape->rotationState==3)
+        return (grid[shape->position[3][2].rows+1][ shape->position[3][2].column]>0 || grid[shape->position[3][3].rows+1][ shape->position[3][3].column]>0 ) ? false :true;        
+
+        break;               
+    default:
+    break;
+ }   
+}
+void setiGrid(Shape shape,int *iGrid )
+{
+    switch (shape.id)
+    {
+    case 0:
+        *iGrid= (shape.rotationState==0) ? shape.position[0][3].rows : shape.position[1][3].rows;
+        break;
+    case 1 : 
+        if (shape.rotationState==0)
+        *iGrid= shape.position[0][3].rows;
+        if (shape.rotationState==1)
+        *iGrid= shape.position[1][3].rows;
+        if (shape.rotationState==2)
+        *iGrid= shape.position[2][0].rows;
+        if (shape.rotationState==3)
+        *iGrid= shape.position[3][3].rows;
+        break;
+    case 2:
+        if (shape.rotationState==0)
+        *iGrid=shape.position[0][3].rows;
+        break;
+    case 3:
+        if(shape.rotationState==0)
+        *iGrid=shape.position[0][0].rows;        
+        if(shape.rotationState==1)
+        *iGrid=shape.position[1][3].rows;        
+        if(shape.rotationState==2)
+        *iGrid=shape.position[2][3].rows;        
+        if(shape.rotationState==3)
+        *iGrid=shape.position[3][3].rows;        
+        break; 
+    case 4:
+        if(shape.rotationState==0)
+        *iGrid=shape.position[0][1].rows;           
+        if(shape.rotationState==1)
+        {
+            *iGrid=shape.position[1][3].rows;
+        }
+
+        break; 
+    case 5:
+        if(shape.rotationState==0)
+        *iGrid=shape.position[0][1].rows;                  
+        if(shape.rotationState==1)
+        *iGrid=shape.position[1][0].rows; 
+        break;
+    case 6:
+        if(shape.rotationState==0)
+        *iGrid=shape.position[0][3].rows;        
+        if(shape.rotationState==1)
+        *iGrid=shape.position[1][2].rows;        
+        if(shape.rotationState==2)
+        *iGrid=shape.position[2][0].rows;        
+        if(shape.rotationState==3)
+        *iGrid=shape.position[3][2].rows;        
+        break;                         
+    default:
+        *iGrid=55;
+        break;
+    }
+}
+void moveShapeVertically(Shape *shape , int grid[row][col] ,  Position arrPositionLastRow[4])
+{
+    int i= shape->rotationState, iGrid;
+
+    setiGrid(*shape , &iGrid );
+
+    if (iGrid  < row -1 && isThereaBlockbelow(shape,grid , arrPositionLastRow)  ) 
+    {
+        //printf("valid %d\n", iGrid);
+        shape->move = true ;
+        for (int k =0 ; k <4 ; k++)
+        shape->position[i][k].rows++ ;      
+    } else 
+    {
+        shape->move = false ;
+
+    }
+}
+
+bool isThereABlockOnRight(Shape *shape , int grid[row][col])
+{
+    switch (shape->id)
+    {
+    case 0:
+        if(shape->rotationState==0)
+        return (grid[shape->position[0][0].rows][shape->position[0][0].column+1]>0 ||grid[shape->position[0][1].rows][shape->position[0][1].column+1]>0 || grid[shape->position[0][2].rows][shape->position[0][2].column+1]>0 || grid[shape->position[0][3].rows][shape->position[0][3].column+1]>0) ? false:true;
+        if(shape->rotationState==1)
+        return (grid[shape->position[1][3].rows][shape->position[1][3].column+1]>0 ) ? false:true;
+
+        break;
+    case 1:
+        if(shape->rotationState==0)
+        return (grid[shape->position[0][0].rows][shape->position[0][0].column+1]>0 ||grid[shape->position[0][3].rows][shape->position[0][3].column+1]>0 ) ? false:true;
+        if(shape->rotationState==1)
+        return (grid[shape->position[1][3].rows][shape->position[1][3].column+1]>0 ) ? false:true;
+        if(shape->rotationState==2)
+        return (grid[shape->position[2][3].rows][shape->position[2][3].column+1]>0 ) ? false:true;
+        if(shape->rotationState==3)
+        return (grid[shape->position[3][1].rows][shape->position[3][1].column+1]>0 || grid[shape->position[3][2].rows][shape->position[3][2].column+1]>0 || grid[shape->position[3][3].rows][shape->position[3][3].column+1]>0 ) ? false:true;
+
+        break;    
+    case 2:
+        if(shape->rotationState==0)
+        return (grid[shape->position[0][1].rows][shape->position[0][1].column+1]>0 ||grid[shape->position[0][3].rows][shape->position[0][3].column+1]>0 ) ? false:true;
+        break;    
+    case 3:
+        if(shape->rotationState==0)
+        return (grid[shape->position[0][0].rows][shape->position[0][0].column+1]>0 ||grid[shape->position[0][3].rows][shape->position[0][3].column+1]>0 ) ? false:true;
+        if(shape->rotationState==1)
+        return (grid[shape->position[1][0].rows][shape->position[1][0].column+1]>0 || grid[shape->position[1][1].rows][shape->position[1][1].column+1]>0 || grid[shape->position[1][2].rows][shape->position[1][2].column+1]>0 ) ? false:true;
+        if(shape->rotationState==2)
+        return (grid[shape->position[2][3].rows][shape->position[2][3].column+1]>0 ) ? false:true;
+        if(shape->rotationState==3)
+        return (grid[shape->position[3][0].rows][shape->position[3][0].column+1]>0 ) ? false:true;
+        break;
+    case 4:
+        if(shape->rotationState==0)
+        return (grid[shape->position[0][3].rows][shape->position[0][3].column+1]>0 ) ? false:true;
+        if(shape->rotationState==1)
+        return (grid[shape->position[1][2].rows][shape->position[1][2].column+1]>0 ||grid[shape->position[1][3].rows][shape->position[1][3].column+1]>0 ) ? false:true;
+        break;
+    case 5:
+        if(shape->rotationState==0)
+        return (grid[shape->position[0][3].rows][shape->position[0][3].column+1]>0 ) ? false:true;
+        if(shape->rotationState==1)
+        return (grid[shape->position[1][2].rows][shape->position[1][2].column+1]>0 ||grid[shape->position[1][3].rows][shape->position[1][3].column+1]>0 ) ? false:true;
+        break;
+    case 6:
+        if(shape->rotationState==0)
+        return (grid[shape->position[0][2].rows][shape->position[0][2].column+1]>0) ? false:true;
+        if(shape->rotationState==1)
+        return (grid[shape->position[1][0].rows][shape->position[1][0].column+1]>0 || grid[shape->position[1][1].rows][shape->position[1][1].column+1]>0 || grid[shape->position[1][2].rows][shape->position[1][2].column+1]>0 ) ? false:true;
+        if(shape->rotationState==2)
+        return (grid[shape->position[2][2].rows][shape->position[2][2].column+1]>0 ) ? false:true;
+        if(shape->rotationState==3)
+        return (grid[shape->position[3][3].rows][shape->position[3][3].column+1]>0 ) ? false:true;
+        break;        
+    default:
+        break;
+    }
+}
+
+void setjGrid(Shape shape,int *jGridRight , int *jGridLeft )
+{
+    switch (shape.id)
+    {
+    case 0:
+        *jGridRight= (shape.rotationState==0) ? shape.position[0][0].column : shape.position[1][3].column;
+        *jGridLeft= (shape.rotationState==0) ? shape.position[0][0].column : shape.position[1][0].column;
+
+        break;
+    case 1 : 
+        if (shape.rotationState==0)
+        {
+            *jGridRight=  shape.position[0][3].column ;
+            *jGridLeft=  shape.position[0][1].column ;
+        }
+        if (shape.rotationState==1)
+        {
+            *jGridRight=  shape.position[1][3].column ;
+            *jGridLeft=  shape.position[1][0].column ;
+        }
+        if (shape.rotationState==2)
+        {
+            *jGridRight=  shape.position[2][3].column ;
+            *jGridLeft=  shape.position[2][0].column ;
+        }
+        if (shape.rotationState==3)
+        {
+            *jGridRight=  shape.position[3][3].column ;
+            *jGridLeft=  shape.position[3][0].column ;
+        }
+        break;
+    case 2:
+        if (shape.rotationState==0)
+            *jGridRight=  shape.position[0][1].column ;
+            *jGridLeft=  shape.position[0][0].column ;            
+        break;
+    case 3:
+        if(shape.rotationState==0)
+        {
+            *jGridRight=  shape.position[0][3].column ;
+            *jGridLeft=  shape.position[0][1].column ;
+        }        
+        if(shape.rotationState==1)
+        {
+            *jGridRight=  shape.position[1][0].column ;
+            *jGridLeft=  shape.position[1][3].column ;
+        }        
+        if(shape.rotationState==2)
+        {
+            *jGridRight=  shape.position[2][3].column ;
+            *jGridLeft=  shape.position[2][0].column ;
+        }        
+        if(shape.rotationState==3)
+        {
+            *jGridRight=  shape.position[3][0].column ;
+            *jGridLeft=  shape.position[3][1].column ;
+        }        
+        break; 
+    case 4:
+        if(shape.rotationState==0)
+        {
+            *jGridRight=  shape.position[0][3].column ;
+            *jGridLeft=  shape.position[0][0].column ;
+        }        
+        if(shape.rotationState==1)
+        {
+            *jGridRight=  shape.position[1][3].column ;
+            *jGridLeft=  shape.position[1][0].column ;
+        }
+        break; 
+    case 5:
+        if(shape.rotationState==0)
+        {
+            *jGridRight=  shape.position[0][3].column ;
+            *jGridLeft=  shape.position[0][0].column ;
+        }        
+        if(shape.rotationState==1)
+        {
+            *jGridRight=  shape.position[1][3].column ;
+            *jGridLeft=  shape.position[1][0].column ;
+        }
+        break;
+    case 6:
+        if(shape.rotationState==0)
+        {
+            *jGridRight=  shape.position[0][2].column ;
+            *jGridLeft=  shape.position[0][0].column ;
+        }        
+        if(shape.rotationState==1)
+        {
+            *jGridRight=  shape.position[1][0].column ;
+            *jGridLeft=  shape.position[1][3].column ;
+        }
+        if(shape.rotationState==2)
+        {
+            *jGridRight=  shape.position[2][2].column ;
+            *jGridLeft=  shape.position[2][0].column ;
+        }        
+        if(shape.rotationState==3)
+        {
+            *jGridRight=  shape.position[3][3].column ;
+            *jGridLeft=  shape.position[3][0].column ;
+        }                
+        break;                         
+    default:
+        *jGridRight=55;*jGridLeft=55;
+        break;
+    }
+}
+void moveShapeHorizantaly(Shape *shape , int grid[row][col] , Direction *direction)
+{
+    int i = shape->rotationState ,jGridRight , jGridLeft;
+    setjGrid(*shape , &jGridRight , &jGridLeft);
+    if (direction->right && !direction->left && shape->move  && jGridRight < col -1 && isThereABlockOnRight(shape , grid))
+    {
+        for (int k =0 ; k <4 ; k++)
+        shape->position[i][k].column++ ;  
+    }
+
+    if (!direction->right && direction->left && shape->move && jGridLeft>0 && isThereABlockOnLeft(shape, grid) )
+    {
+        for (int k =0 ; k <4 ; k++)
+        shape->position[i][k].column-- ;  
+    }
+    direction->right = false ;
+    direction->left = false ;
+}
+
+bool isThereABlockOnLeft(Shape *shape , int grid[row][col])
+{
+    switch (shape->id)
+    {
+    case 0:
+        if(shape->rotationState==0)
+        return (grid[shape->position[0][0].rows][shape->position[0][0].column-1]>0 ||grid[shape->position[0][1].rows][shape->position[0][1].column-1]>0 || grid[shape->position[0][2].rows][shape->position[0][2].column-1]>0 || grid[shape->position[0][3].rows][shape->position[0][3].column-1]>0) ? false:true;
+        if(shape->rotationState==1)
+        return (grid[shape->position[1][0].rows][shape->position[1][0].column-1]>0 ) ? false:true;
+
+        break;
+    case 1:
+        if(shape->rotationState==0)
+        return (grid[shape->position[0][1].rows][shape->position[0][1].column-1]>0 ) ? false:true;
+        if(shape->rotationState==1)
+        return (grid[shape->position[1][0].rows][shape->position[1][0].column-1]>0 || grid[shape->position[1][1].rows][shape->position[1][1].column-1]>0 || grid[shape->position[1][2].rows][shape->position[1][2].column-1]>0 ) ? false:true;
+        if(shape->rotationState==2)
+        return (grid[shape->position[2][0].rows][shape->position[2][0].column-1]>0 || grid[shape->position[2][1].rows][shape->position[2][1].column-1]>0 ) ? false:true;
+        if(shape->rotationState==3)
+        return (grid[shape->position[3][0].rows][shape->position[3][0].column-1]>0 ) ? false:true;
+
+        break;    
+    case 2:
+        if(shape->rotationState==0)
+        return (grid[shape->position[0][0].rows][shape->position[0][0].column-1]>0 ||grid[shape->position[0][2].rows][shape->position[0][2].column-1]>0 ) ? false:true;
+        break;    
+    case 3:
+        if(shape->rotationState==0)
+        return (grid[shape->position[0][1].rows][shape->position[0][1].column-1]>0 ) ? false:true;
+        if(shape->rotationState==1)
+        return (grid[shape->position[1][3].rows][shape->position[1][3].column-1]>0 ) ? false:true;
+        if(shape->rotationState==2)
+        return (grid[shape->position[2][0].rows][shape->position[2][0].column-1]>0 || grid[shape->position[2][1].rows][shape->position[2][1].column-1]>0 ) ? false:true;
+        if(shape->rotationState==3)
+        return (grid[shape->position[3][1].rows][shape->position[3][1].column-1]>0 || grid[shape->position[3][2].rows][shape->position[3][2].column-1]>0 || grid[shape->position[3][3].rows][shape->position[3][3].column-1]>0 ) ? false:true;
+        break;
+    case 4:
+        if(shape->rotationState==0)
+        return (grid[shape->position[0][0].rows][shape->position[0][0].column-1]>0 ) ? false:true;
+        if(shape->rotationState==1)
+        return (grid[shape->position[1][0].rows][shape->position[1][0].column-1]>0 ||grid[shape->position[1][1].rows][shape->position[1][1].column-1]>0 ) ? false:true;
+        break;
+    case 5:
+        if(shape->rotationState==0)
+        return (grid[shape->position[0][0].rows][shape->position[0][0].column-1]>0 ) ? false:true;
+        if(shape->rotationState==1)
+        return (grid[shape->position[1][0].rows][shape->position[1][0].column-1]>0 ||grid[shape->position[1][1].rows][shape->position[1][1].column-1]>0 ) ? false:true;
+        break;
+    case 6:
+        if(shape->rotationState==0)
+        return (grid[shape->position[0][0].rows][shape->position[0][0].column-1]>0) ? false:true;
+        if(shape->rotationState==1)
+        return (grid[shape->position[1][3].rows][shape->position[1][3].column-1]>0 ) ? false:true;
+        if(shape->rotationState==2)
+        return (grid[shape->position[2][0].rows][shape->position[2][0].column-1]>0 ) ? false:true;
+        if(shape->rotationState==3)
+        return (grid[shape->position[3][0].rows][shape->position[3][0].column-1]>0 || grid[shape->position[3][1].rows][shape->position[3][1].column-1]>0 || grid[shape->position[3][2].rows][shape->position[3][2].column-1]>0 ) ? false:true;
+        break;        
+    default:
         break;
     }
 }
